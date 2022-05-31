@@ -87,29 +87,29 @@ class MiNubeFragment : Fragment() {
         val mStorage = Firebase.storage
         val lista = mStorage.reference.child("uri")
 
-        val mDatabase = FirebaseDatabase.getInstance().reference;
-        mDatabase.child("pruebasGenerales").get().addOnSuccessListener {
-            // var pdfList = it.getValue(ArrayList<putPDF.class>)
-            var lista = it.children
-            lista.forEach { element ->
-                println("Hijo: " + element.value)
+//        val mDatabase = FirebaseDatabase.getInstance().reference;
+//        mDatabase.child("pruebasGenerales").get().addOnSuccessListener {
+//            // var pdfList = it.getValue(ArrayList<putPDF.class>)
+//            var lista = it.children
+//            lista.forEach { element ->
+//                println("Hijo: " + element.value)
+//
+//                val aux = ModeloListarArchivos(
+//                    element.child("name").value.toString(),
+//                    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/1200px-PDF_file_icon.svg.png",
+//                    element.child("uri").value.toString()
+//                )
+//                archivos.add(aux)
+//            }
+//
+//            initRecyclerView()
+//            println("SIZE "+ archivos.size)
+//
+//        }.addOnFailureListener {
+//            Log.e("firebase", "Error getting data", it)
+//        }
 
-                val aux = ModeloListarArchivos(
-                    element.child("name").value.toString(),
-                    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/1200px-PDF_file_icon.svg.png",
-                    element.child("uri").value.toString()
-                )
-                archivos.add(aux)
-            }
 
-            initRecyclerView()
-            println("SIZE "+ archivos.size)
-
-        }.addOnFailureListener {
-            Log.e("firebase", "Error getting data", it)
-        }
-
-/*
         println("FUNCIONA?")
         lista.listAll()
             .addOnSuccessListener { (items, prefixes) ->
@@ -138,13 +138,13 @@ class MiNubeFragment : Fragment() {
 
                     var uri = Uri.fromFile(file);
                     println("URI FILE")
-                    println(uri.toString())
+                    println(uri.path.toString())
 
 
                     val aux = ModeloListarArchivos(
                         name,
                         "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/1200px-PDF_file_icon.svg.png",
-                        file.absolutePath
+                        uri.path.toString()
                     )
                     archivos.add(aux)
                 }
@@ -157,7 +157,7 @@ class MiNubeFragment : Fragment() {
         println("SIZE2 "+ archivos.size)
         println("FUNCIONA?")
 
-*/
+
 
 //        System.out.println("XXXXXXXXXXXXX");
 //        //System.out.println(lista.result.prefixes);
