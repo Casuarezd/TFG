@@ -1,6 +1,7 @@
 package com.example.tfg.ui.miNube
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
@@ -17,9 +18,11 @@ import com.google.firebase.storage.ktx.component1
 import com.google.firebase.storage.ktx.component2
 import com.google.firebase.storage.ktx.storage
 import android.net.Uri
+import android.preference.PreferenceManager
 import android.util.Log
 import com.example.tfg.HacerTest
 import com.example.tfg.HacerTestNube
+import com.example.tfg.R
 import com.example.tfg.adapter.CustomAdapterNube
 import com.example.tfg.databinding.FragmentNubeBinding
 import com.example.tfg.model.ModeloListarArchivos
@@ -67,25 +70,15 @@ class MiNubeFragment : Fragment() {
 //    }
 
     private fun listarDocumentos() {
-//        val files = directory.listFiles()
-//        if (files != null) {
-//            for (file in files) {
-//                if (file != null) {
-//                    var extension = file.extension
-//                    if (file.isFile && extension=="pdf") {
-//                        val aux = ModeloListarArchivos(
-//                            file.name,
-//                            "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/1200px-PDF_file_icon.svg.png",
-//                            file.absolutePath
-//                        )
-//                        archivos.add(aux)
-//                    }
-//
-//                }
-//            }
-//        }
+        val myPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+
+        val email: String = myPreferences.getString("email", "pruebas")
+
+        val splitEmail = email.split("@").toTypedArray()
+        val finalEmail = splitEmail[0]
+
         val mStorage = Firebase.storage
-        val lista = mStorage.reference.child("uri")
+        val lista = mStorage.reference.child(finalEmail)
 
 //        val mDatabase = FirebaseDatabase.getInstance().reference;
 //        mDatabase.child("pruebasGenerales").get().addOnSuccessListener {
@@ -211,6 +204,17 @@ class MiNubeFragment : Fragment() {
                     builder.setMessage("Si acepta eliminara el test de forma permanente y no podrá recuperarlo")
                     builder.setPositiveButton("Eliminar",
                         DialogInterface.OnClickListener { dialog, id ->
+                            var oneArchive = archivos[viewHolder.adapterPosition]
+
+                            val myPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+                            val email: String = myPreferences.getString("email", "pruebas")
+                            val splitEmail = email.split("@").toTypedArray()
+                            val finalEmail = splitEmail[0]
+
+                            val mStorage = Firebase.storage
+                            val elemento = mStorage.reference.child(finalEmail).child(oneArchive.titulo)
+                            elemento.delete()
+
                             archivos.removeAt(viewHolder.adapterPosition);
                             adapter.notifyItemRemoved(viewHolder.adapterPosition)
                         })

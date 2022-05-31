@@ -7,14 +7,24 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import android.preference.PreferenceManager
+
+import android.content.SharedPreferences
 
 class Inicio : AppCompatActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_inicio)
     }
 
     fun omitir(v: View) {
+        var myPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(this@Inicio)
+        val myEditor = myPreferences.edit()
+        myEditor.putString("email", "pruebas");
+        myEditor.commit();
+
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
     }
@@ -28,7 +38,7 @@ class Inicio : AppCompatActivity() {
                 .createUserWithEmailAndPassword(email.text.toString(), password.text.toString())
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
-                        showHome()
+                        showHome(email.text.toString())
                     } else {
                         showAlert()
                     }
@@ -45,7 +55,7 @@ class Inicio : AppCompatActivity() {
                 .signInWithEmailAndPassword(email.text.toString(), password.text.toString())
                 .addOnCompleteListener {
                     if (it.isSuccessful) {
-                        showHome()
+                        showHome(email.text.toString())
                     } else {
                         showAlert()
                     }
@@ -62,7 +72,12 @@ class Inicio : AppCompatActivity() {
         dialog.show()
     }
 
-    fun showHome() {
+    fun showHome(email: String) {
+        var myPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(this@Inicio)
+        val myEditor = myPreferences.edit()
+        myEditor.putString("email", email);
+        myEditor.commit();
+
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
     }

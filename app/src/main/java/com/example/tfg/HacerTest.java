@@ -2,9 +2,11 @@ package com.example.tfg;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -31,6 +33,7 @@ import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -60,7 +63,8 @@ public class HacerTest extends AppCompatActivity {
     Button btnSiguiente;
     Button btnVerificar;
 
-    private FirebaseAuth mAuth;
+    private String rutaGlobal = "";
+    private String tituloGlobal = "";
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void onCreate(Bundle savedInstanceState) {
@@ -73,8 +77,9 @@ public class HacerTest extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         String ruta = extras.getString("ruta");
-        String imagen = extras.getString("imagen");
+        rutaGlobal = ruta;
         String titulo = extras.getString("titulo");
+        tituloGlobal = titulo;
 
         rgroup = (RadioGroup) findViewById(R.id.radioGrupo);
         ll1 = (LinearLayout) findViewById(R.id.linearLayout1);
@@ -103,30 +108,7 @@ public class HacerTest extends AppCompatActivity {
         try {
             PdfReader reader = new PdfReader(ruta);
 
-            File archivo = new File(ruta);
-            InputStream input = new FileInputStream(archivo);
-            StorageReference mStorage = FirebaseStorage.getInstance().getReference();
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-            //DatabaseReference aux = FirebaseDatabase.getInstance().getReferenceFromUrl("https://testpro3-5d50d-default-rtdb.europe-west1.firebasedatabase.app");
-            StorageReference pruebas = mStorage.child("pruebas").child(titulo);
-            pruebas.putStream(input);
 
-            //LO BUENO
-            String[] spliter = titulo.split("\\.");
-
-            StorageReference uri = mStorage.child("uri").child(spliter[0]);
-            Uri filepath = Uri.fromFile(archivo);
-            uri.putFile(filepath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
-                            while (!uriTask.isComplete());
-                            Uri uri = uriTask.getResult();
-                            System.out.println("Tengo uri");
-                            putPDF pdf = new putPDF(spliter[0], uri.toString());
-                            databaseReference.child("pruebasGenerales").child(spliter[0]).setValue(pdf);
-                        }
-                    });
 
 //            InputStream input2 = new FileInputStream(ruta);
 //            StorageReference bytes = mStorage.child("bytes").child(titulo);
@@ -138,7 +120,7 @@ public class HacerTest extends AppCompatActivity {
 //            StreamDownloadTask stream = mStorage.getStream();
 //            System.out.println(stream);
             //StorageReference pdfs = mStorage.child("");
-            System.out.println("LISTA ARCHIVOS");
+//            System.out.println("LISTA ARCHIVOS");
             //System.out.println(mStorage.listAll().getResult().getItems());
 
 //            mStorage.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
@@ -407,7 +389,10 @@ public class HacerTest extends AppCompatActivity {
         cambiarPregunta();
     }
 
-    public void terminarTest(View view) {
+    public void terminarTest(View view) throws FileNotFoundException {
+
+        subirArchivo();
+
         Intent intent = new Intent(this, Resultados.class);
         intent.putExtra("total", preguntas.length);
         intent.putExtra("correctas", bien);
@@ -613,5 +598,43 @@ public class HacerTest extends AppCompatActivity {
             return true;
         }
         return false;
+    }
+
+    private void subirArchivo() throws FileNotFoundException {
+
+        SharedPreferences myPreferences
+                = PreferenceManager.getDefaultSharedPreferences(HacerTest.this);
+
+        String email = myPreferences.getString("email", "pruebas");
+
+        String[] splitEmail = email.split("@");
+        String finalEmail = splitEmail[0];
+
+        File archivo = new File(rutaGlobal);
+        InputStream input = new FileInputStream(archivo);
+        StorageReference mStorage = FirebaseStorage.getInstance().getReference();
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+        //DatabaseReference aux = FirebaseDatabase.getInstance().getReferenceFromUrl("https://testpro3-5d50d-default-rtdb.europe-west1.firebasedatabase.app");
+//        StorageReference pdfs = mStorage.child(email).child(tituloGlobal);
+//        pdfs.putStream(input);
+
+        //LO BUENO
+        String[] spliter = tituloGlobal.split("\\.");
+
+        StorageReference uri = mStorage.child(finalEmail).child(spliter[0]);
+        Uri filepath = Uri.fromFile(archivo);
+        uri.putFile(filepath);
+
+//        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//            @Override
+//            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+//                while (!uriTask.isComplete());
+//                Uri uri = uriTask.getResult();
+//                System.out.println("Tengo uri");
+//                putPDF pdf = new putPDF(spliter[0], uri.toString());
+//                databaseReference.child(finalEmail).child(spliter[0]).setValue(pdf);
+//            }
+//        });
     }
 }
