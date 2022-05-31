@@ -31,11 +31,18 @@ import com.itextpdf.io.util.FileUtil;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -105,12 +112,9 @@ public class HacerTestNube extends AppCompatActivity {
         String texto = "";
         String textFromPage = "";
         try {
-            URL url = new URL(ruta);
-            //File archivo = Paths.get(url.toURI()).toFile();
-            File archivo2 = new File(url.getPath());
-            InputStream input = new FileInputStream(archivo2);
+            File archivo = new File(ruta);
+            InputStream input = new FileInputStream(archivo);
 
-            //InputStream input = new URL(ruta).openStream();
 
             PdfReader reader = new PdfReader(input);
 
