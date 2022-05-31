@@ -18,6 +18,7 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.tfg.model.Cuestion;
 import com.example.tfg.model.putPDF;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -52,7 +53,7 @@ public class HacerTest extends AppCompatActivity {
     private int mal;
     private int nc;
 
-    private int lineafallo=0;
+    private int lineafallo = 0;
 
     RadioGroup rgroup;
     LinearLayout ll1;
@@ -109,7 +110,6 @@ public class HacerTest extends AppCompatActivity {
             PdfReader reader = new PdfReader(ruta);
 
 
-
 //            InputStream input2 = new FileInputStream(ruta);
 //            StorageReference bytes = mStorage.child("bytes").child(titulo);
 //            byte[] pdf = new byte[ruta.length()];
@@ -151,14 +151,14 @@ public class HacerTest extends AppCompatActivity {
             System.out.println("NUMERO DE PAGINAS: " + nPag);
             //PdfTextExtractor parser =new PdfTextExtractor(new PdfReader("C:/Text.pdf"));
             //System.out.println(reader.getPageContent(1));
-            for(int i=1; i<=nPag;i++){
-                if(i!=1){
-                    textFromPage = textFromPage +"\n" + PdfTextExtractor.getTextFromPage(reader, i);
-                }else{
+            for (int i = 1; i <= nPag; i++) {
+                if (i != 1) {
+                    textFromPage = textFromPage + "\n" + PdfTextExtractor.getTextFromPage(reader, i);
+                } else {
                     textFromPage = textFromPage + PdfTextExtractor.getTextFromPage(reader, i);
                 }
 
-                System.out.println("CONTENIDO PAGINA " + i +": "+ textFromPage);
+                System.out.println("CONTENIDO PAGINA " + i + ": " + textFromPage);
             }
             //textFromPage = PdfTextExtractor.getTextFromPage(reader, 1);
             //textFromPage = textFromPage +"\n"+ PdfTextExtractor.getTextFromPage(reader, 2);
@@ -205,10 +205,10 @@ public class HacerTest extends AppCompatActivity {
             test.add(c);
         }
         */
-        if(comprobarFormato1(lista)){
+        if (comprobarFormato1(lista)) {
             pasarArrayVector(test);
-        }else{
-            Toast.makeText(this, "Error de formato en linea "+ lineafallo, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Error de formato en linea " + lineafallo, Toast.LENGTH_SHORT).show();
             finish();
         }
 
@@ -243,9 +243,9 @@ public class HacerTest extends AppCompatActivity {
         btnComenzar.setVisibility(View.INVISIBLE);
         btnComenzar.setEnabled(false);
 
-        bien=0;
-        mal=0;
-        nc=preguntas.length;
+        bien = 0;
+        mal = 0;
+        nc = preguntas.length;
 
         cambiarPregunta();
     }
@@ -466,7 +466,7 @@ public class HacerTest extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }*/
 
-    public boolean comprobarFormato1(String[] list){
+    public boolean comprobarFormato1(String[] list) {
         int i = 0;
         while (i < list.length) {
             Cuestion c = new Cuestion();
@@ -474,38 +474,37 @@ public class HacerTest extends AppCompatActivity {
 
             while (!fin) {
 
-                if(list[i] == null || list[i]=="" || list[i].length()<3){
-                    lineafallo=i+1;
+                if (list[i] == null || list[i] == "" || list[i].length() < 3) {
+                    lineafallo = i + 1;
                     return false;
                 }
                 //Compruebo si el primer caracter es un guion
                 //Compruebo si las respuestas empiezan por una letra valida
                 //Compruebo si la respueta empieza por R y es valida
-                if(i==0 && list[i].charAt(0)!='-'){
-                    lineafallo=i+1;
+                if (i == 0 && list[i].charAt(0) != '-') {
+                    lineafallo = i + 1;
                     return false;
                 }
 
-                if(list[i].charAt(0)=='-'){
+                if (list[i].charAt(0) == '-') {
                     c.setPregunta(list[i]);
-                }
-                else if(list[i].charAt(0) == 'R') {
+                } else if (list[i].charAt(0) == 'R') {
                     String reducido = list[i].substring(2);
                     char letra = reducido.charAt(0);
-                    if(isletter(letra)){
+                    if (isletter(letra)) {
                         c.setCorrecta(reducido);
                         fin = true;
-                    }else{
-                        lineafallo=i+1;
+                    } else {
+                        lineafallo = i + 1;
                         return false;
                     }
                 } else {
                     String reducido = list[i].substring(2);
                     char letra = list[i].charAt(0);
-                    if(isletter(letra)){
+                    if (isletter(letra)) {
                         c.getRespuestas().add(reducido);
-                    }else{
-                        lineafallo=i+1;
+                    } else {
+                        lineafallo = i + 1;
                         return false;
                     }
 
@@ -519,41 +518,40 @@ public class HacerTest extends AppCompatActivity {
         return true;
     }
 
-    public boolean comprobarFormato2(String[] list){
+    public boolean comprobarFormato2(String[] list) {
         int i = 0;
         while (i < list.length) {
-            if(list[i] == null || list[i]==""){
+            if (list[i] == null || list[i] == "") {
                 return false;
             }
             Cuestion c = new Cuestion();
             boolean fin = false;
-            boolean valido=true;
+            boolean valido = true;
 
             while (!fin) {
 
                 //Compruebo si el primer caracter es un guion
                 //Compruebo si las respuestas empiezan por una letra valida
                 //Compruebo si la respueta empieza por R y es valida
-                if(i==0 && list[i].charAt(0)!='-'){
+                if (i == 0 && list[i].charAt(0) != '-') {
                     return false;
                 }
 
-                if(list[i].charAt(0)=='-'){
+                if (list[i].charAt(0) == '-') {
                     c.setPregunta(list[i]);
-                }
-                else if(list[i].charAt(0) == 'R') {
+                } else if (list[i].charAt(0) == 'R') {
                     String reducido = list[i].substring(2);
                     char letra = reducido.charAt(0);
-                    if(isletter(letra)){
+                    if (isletter(letra)) {
                         c.setCorrecta(reducido);
                         fin = true;
-                    }else{
+                    } else {
                         return false;
                     }
                 } else {
-                    if(list[i].charAt(0)==' '){
-                        valido=false;
-                    }else {
+                    if (list[i].charAt(0) == ' ') {
+                        valido = false;
+                    } else {
                         String reducido = list[i].substring(2);
                         char letra = list[i].charAt(0);
                         if (isletter(letra)) {
@@ -566,7 +564,7 @@ public class HacerTest extends AppCompatActivity {
                 }
                 i++;
             }
-            if(valido){
+            if (valido) {
                 c.setContestada(false);
                 test.add(c);
             }
@@ -575,26 +573,26 @@ public class HacerTest extends AppCompatActivity {
         return true;
     }
 
-    public boolean isletter(char aux){
-        if(aux == 'a'){
+    public boolean isletter(char aux) {
+        if (aux == 'a') {
             return true;
         }
-        if(aux == 'b'){
+        if (aux == 'b') {
             return true;
         }
-        if(aux == 'c'){
+        if (aux == 'c') {
             return true;
         }
-        if(aux == 'd'){
+        if (aux == 'd') {
             return true;
         }
-        if(aux == 'e'){
+        if (aux == 'e') {
             return true;
         }
-        if(aux == 'f'){
+        if (aux == 'f') {
             return true;
         }
-        if(aux == 'g'){
+        if (aux == 'g') {
             return true;
         }
         return false;
@@ -607,34 +605,24 @@ public class HacerTest extends AppCompatActivity {
 
         String email = myPreferences.getString("email", "pruebas");
 
-        String[] splitEmail = email.split("@");
-        String finalEmail = splitEmail[0];
-
-        File archivo = new File(rutaGlobal);
-        InputStream input = new FileInputStream(archivo);
-        StorageReference mStorage = FirebaseStorage.getInstance().getReference();
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-        //DatabaseReference aux = FirebaseDatabase.getInstance().getReferenceFromUrl("https://testpro3-5d50d-default-rtdb.europe-west1.firebasedatabase.app");
+//        String[] splitEmail = email.split("@");
+//        String finalEmail = splitEmail[0];
+        assert email != null;
+        if (!email.equals("empty")) {
+            File archivo = new File(rutaGlobal);
+            InputStream input = new FileInputStream(archivo);
+            StorageReference mStorage = FirebaseStorage.getInstance().getReference();
+            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+            //DatabaseReference aux = FirebaseDatabase.getInstance().getReferenceFromUrl("https://testpro3-5d50d-default-rtdb.europe-west1.firebasedatabase.app");
 //        StorageReference pdfs = mStorage.child(email).child(tituloGlobal);
 //        pdfs.putStream(input);
 
-        //LO BUENO
-        String[] spliter = tituloGlobal.split("\\.");
+            //LO BUENO
+            String[] spliter = tituloGlobal.split("\\.");
 
-        StorageReference uri = mStorage.child(finalEmail).child(spliter[0]);
-        Uri filepath = Uri.fromFile(archivo);
-        uri.putFile(filepath);
-
-//        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//            @Override
-//            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
-//                while (!uriTask.isComplete());
-//                Uri uri = uriTask.getResult();
-//                System.out.println("Tengo uri");
-//                putPDF pdf = new putPDF(spliter[0], uri.toString());
-//                databaseReference.child(finalEmail).child(spliter[0]).setValue(pdf);
-//            }
-//        });
+            StorageReference uri = mStorage.child(email).child(spliter[0]);
+            Uri filepath = Uri.fromFile(archivo);
+            uri.putFile(filepath);
+        }
     }
 }

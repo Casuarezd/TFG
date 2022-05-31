@@ -22,7 +22,7 @@ class Inicio : AppCompatActivity() {
     fun omitir(v: View) {
         var myPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(this@Inicio)
         val myEditor = myPreferences.edit()
-        myEditor.putString("email", "pruebas");
+        myEditor.putString("email", "empty");
         myEditor.commit();
 
         val intent = Intent(this, MainActivity::class.java)

@@ -74,102 +74,56 @@ class MiNubeFragment : Fragment() {
 
         val email: String = myPreferences.getString("email", "pruebas")
 
-        val splitEmail = email.split("@").toTypedArray()
-        val finalEmail = splitEmail[0]
+//        val splitEmail = email.split("@").toTypedArray()
+//        val finalEmail = splitEmail[0]
+        if (email != "empty") {
+            val mStorage = Firebase.storage
+            val lista = mStorage.reference.child(email)
 
-        val mStorage = Firebase.storage
-        val lista = mStorage.reference.child(finalEmail)
+            lista.listAll()
+                .addOnSuccessListener { (items, prefixes) ->
+                    prefixes.forEach { prefix ->
+                        //println(prefix)
+                    }
 
-//        val mDatabase = FirebaseDatabase.getInstance().reference;
-//        mDatabase.child("pruebasGenerales").get().addOnSuccessListener {
-//            // var pdfList = it.getValue(ArrayList<putPDF.class>)
-//            var lista = it.children
-//            lista.forEach { element ->
-//                println("Hijo: " + element.value)
-//
-//                val aux = ModeloListarArchivos(
-//                    element.child("name").value.toString(),
-//                    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/1200px-PDF_file_icon.svg.png",
-//                    element.child("uri").value.toString()
-//                )
-//                archivos.add(aux)
-//            }
-//
-//            initRecyclerView()
-//            println("SIZE "+ archivos.size)
-//
-//        }.addOnFailureListener {
-//            Log.e("firebase", "Error getting data", it)
-//        }
+                    items.forEach { item ->
 
-
-        println("FUNCIONA?")
-        lista.listAll()
-            .addOnSuccessListener { (items, prefixes) ->
-                prefixes.forEach { prefix ->
-                    //println(prefix)
-                }
-
-                items.forEach { item ->
-
-                    var ruta = item.toString().split("/")
-                    var name = ruta[ruta.size-1]
-                    var uriItem = item.downloadUrl
-                    println("URI Item")
-                    println(uriItem.toString())
+                        var ruta = item.toString().split("/")
+                        var name = ruta[ruta.size - 1]
+                        var uriItem = item.downloadUrl
+                        println("URI Item")
+                        println(uriItem.toString())
 
 //                    var directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
 //                    var file = File.createTempFile(name[0], "pdf", directory)
 //                    var file = File(name[0])
-                    var file = File.createTempFile(name, "pdf")
-                    item.getFile(file)
+                        var file = File.createTempFile(name, "pdf")
+                        item.getFile(file)
 
 //                    println("Name")
 //                    println(name[0]);
 //                    println("Path")
 //                    println(file.absolutePath);
 
-                    var uri = Uri.fromFile(file);
-                    println("URI FILE")
-                    println(uri.path.toString())
+                        var uri = Uri.fromFile(file);
+                        println("URI FILE")
+                        println(uri.path.toString())
 
 
-                    val aux = ModeloListarArchivos(
-                        name,
-                        "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/1200px-PDF_file_icon.svg.png",
-                        uri.path.toString()
-                    )
-                    archivos.add(aux)
+                        val aux = ModeloListarArchivos(
+                            name,
+                            "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/1200px-PDF_file_icon.svg.png",
+                            uri.path.toString()
+                        )
+                        archivos.add(aux)
+                    }
+                    initRecyclerView()
+                    println("SIZE " + archivos.size)
                 }
-                initRecyclerView()
-                println("SIZE "+ archivos.size)
-            }
-            .addOnFailureListener {
-                // Uh-oh, an error occurred!
-            }
-        println("SIZE2 "+ archivos.size)
-        println("FUNCIONA?")
-
-
-
-//        System.out.println("XXXXXXXXXXXXX");
-//        //System.out.println(lista.result.prefixes);
-//        System.out.println("XXXXXXXXXXXXX");
-//
-//        var islandRef = mStorage.child("pdfs/Prueba.pdf")
-//
-//        val ONE_MEGABYTE: Long = 9999 * 9999
-//        val task = islandRef.getBytes(ONE_MEGABYTE);
-//        System.out.println("HOLA "+ task);
-
-//        val ONE_MEGABYTE: Long = 1024 * 1024
-//        islandRef.getBytes(ONE_MEGABYTE).addOnSuccessListener {
-//            // Data for "images/island.jpg" is returned, use this as needed
-//            System.out.println()
-//        }.addOnFailureListener {
-//            // Handle any errors
-//        }
-
+                .addOnFailureListener {
+                    // Uh-oh, an error occurred!
+                }
+        }
     }
 
     fun initRecyclerView() {
@@ -206,13 +160,15 @@ class MiNubeFragment : Fragment() {
                         DialogInterface.OnClickListener { dialog, id ->
                             var oneArchive = archivos[viewHolder.adapterPosition]
 
-                            val myPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+                            val myPreferences =
+                                PreferenceManager.getDefaultSharedPreferences(context)
                             val email: String = myPreferences.getString("email", "pruebas")
                             val splitEmail = email.split("@").toTypedArray()
                             val finalEmail = splitEmail[0]
 
                             val mStorage = Firebase.storage
-                            val elemento = mStorage.reference.child(finalEmail).child(oneArchive.titulo)
+                            val elemento =
+                                mStorage.reference.child(finalEmail).child(oneArchive.titulo)
                             elemento.delete()
 
                             archivos.removeAt(viewHolder.adapterPosition);
