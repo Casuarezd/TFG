@@ -2,13 +2,16 @@ package com.example.tfg.ui.search
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.tfg.Estadisticas
 import com.example.tfg.HacerTestNube
 import com.example.tfg.adapter.CustomAdapterNube
 import com.example.tfg.databinding.FragmentSearchBinding
@@ -110,10 +113,17 @@ class SearchFragment : Fragment(){
         //Controlar la pulsación
         adapter.setOnItemClickListener(object : CustomAdapterNube.onItemClickListener {
             override fun onItemClick(position: Int) {
+
+                var myPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+                val myEditor = myPreferences.edit()
+                myEditor.putString("nombrePDF", archivos[position].titulo);
+                myEditor.commit();
+
                 val intent = Intent(binding.recyclerView.context, HacerTestNube::class.java)
                 intent.putExtra("ruta", archivos[position].ruta)
                 intent.putExtra("imagen", archivos[position].imagen)
                 intent.putExtra("titulo", archivos[position].titulo)
+                intent.putExtra("metodo", "search")
                 startActivity(intent)
             }
         })

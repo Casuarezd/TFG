@@ -44,12 +44,6 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        //listarDocumentos(File("/storage/emulated/0/Download/"));
-        //listarDocumentos(File(Environment.DIRECTORY_DOWNLOADS))
-        //listarDocumentos(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS))
-        //initRecyclerView()
-
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && activity?.let {
                 ContextCompat.checkSelfPermission(it,  Manifest.permission.READ_EXTERNAL_STORAGE)
             } != PackageManager.PERMISSION_GRANTED) {
@@ -58,40 +52,6 @@ class HomeFragment : Fragment() {
             listarDocumentos(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS))
             initRecyclerView()
         }
-
-
-        //listarDocumentos(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS))
-        //initRecyclerView()
-
-
-
-/*
-
-        val model: HomeViewModel by viewModels()
-
-        model.getDocuments().observe(this, Observer<List<ModeloListarArchivos>>{
-            R.id.recyclerView
-        })
-
-
-        var recyclerView = view?.findViewById<RecyclerView>(R.id.recyclerView)
-
-        recyclerView?.layoutManager = LinearLayoutManager(context)
-        //CUSTOM ADAPTER TIENE QUE LLEGAR UNA LISTA CORRECTA
-        var adapter = CustomAdapter(archivos)
-        recyclerView?.adapter = adapter
-        adapter.setOnItemClickListener(object : CustomAdapter.onItemClickListener {
-            override fun onItemClick(position: Int) {
-                val intent = Intent(view?.context,  HacerTest::class.java)
-                intent.putExtra("ruta", archivos[position].ruta)
-                intent.putExtra("imagen", archivos[position].imagen)
-                intent.putExtra("titulo", archivos[position].titulo)
-                view?.context?.startActivity(intent)
-            }
-        })
-        //var recyclerView = view?.findViewById<RecyclerView>(R.id.recyclerView)
-        //initRecyclerView(recyclerView)*/
-
         return root
     }
 
@@ -115,20 +75,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-    /*fun initRecyclerView(view: RecyclerView?) {
-        view?.layoutManager = LinearLayoutManager(context)
-        var adapter = CustomAdapter(archivos)
-        view?.adapter = adapter
-        adapter.setOnItemClickListener(object : CustomAdapter.onItemClickListener {
-            override fun onItemClick(position: Int) {
-                val intent = Intent(view?.context,  HacerTest::class.java)
-                intent.putExtra("ruta", archivos[position].ruta)
-                intent.putExtra("imagen", archivos[position].imagen)
-                intent.putExtra("titulo", archivos[position].titulo)
-                view?.context?.startActivity(intent)
-            }
-        })
-    }*/
     override fun onPause() {
         super.onPause()
         this.disposable?.dispose()
@@ -157,10 +103,6 @@ class HomeFragment : Fragment() {
 
 
     private fun listarDocumentos(directory: File) {
-        directory.walk().forEach {
-           // println(it)
-        }
-
         val files = directory.listFiles()
         if (files != null) {
             for (file in files) {

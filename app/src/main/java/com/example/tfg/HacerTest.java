@@ -20,32 +20,17 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tfg.model.Cuestion;
-import com.example.tfg.model.putPDF;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
 public class HacerTest extends AppCompatActivity {
-    private TextView tView;
     private ArrayList<Cuestion> test = new ArrayList<Cuestion>();
-    private ArrayList<Cuestion> incorrectas;
     private Cuestion[] preguntas;
-    private ArrayList<String> lineas;
     private int preguntaActual = 0;
     private int[] respuestasUser;
 
@@ -66,11 +51,12 @@ public class HacerTest extends AppCompatActivity {
 
     private String rutaGlobal = "";
     private String tituloGlobal = "";
+    private long tiempoI;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.vista_test2);
+        setContentView(R.layout.vista_test_local);
 
 //        mAuth = FirebaseAuth.getInstance();
 //        FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -94,59 +80,9 @@ public class HacerTest extends AppCompatActivity {
         ll1.setVisibility(View.INVISIBLE);
         ll2.setVisibility(View.INVISIBLE);
 
-        // tView.setText(titulo);
-        /*
-        try {
-           pruebas(ruta);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        tView.setText(lineas.toString());
-
-         */
-        String texto = "";
         String textFromPage = "";
         try {
             PdfReader reader = new PdfReader(ruta);
-
-
-//            InputStream input2 = new FileInputStream(ruta);
-//            StorageReference bytes = mStorage.child("bytes").child(titulo);
-//            byte[] pdf = new byte[ruta.length()];
-//            input2.read(pdf);
-//            bytes.putBytes(pdf);
-
-//            mStorage = FirebaseStorage.getInstance().getReference("pdfs");
-//            StreamDownloadTask stream = mStorage.getStream();
-//            System.out.println(stream);
-            //StorageReference pdfs = mStorage.child("");
-//            System.out.println("LISTA ARCHIVOS");
-            //System.out.println(mStorage.listAll().getResult().getItems());
-
-//            mStorage.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
-//                        @Override
-//                        public void onSuccess(ListResult listResult) {
-//                            for (StorageReference prefix : listResult.getPrefixes()) {
-//                                // All the prefixes under listRef.
-//                                // You may call listAll() recursively on them.
-//                                System.out.println(prefix);
-//                            }
-//
-//                            for (StorageReference item : listResult.getItems()) {
-//                                // All the items under listRef.
-//                                System.out.println("Hola");
-//                                System.out.println(item);
-//                            }
-//                        }
-//                    })
-//                    .addOnFailureListener(new OnFailureListener() {
-//                        @Override
-//                        public void onFailure(@NonNull Exception e) {
-//                            // Uh-oh, an error occurred!
-//                        }
-//                    });
-//            System.out.println("LISTA ARCHIVOS");
-
             int nPag = reader.getNumberOfPages();
             System.out.println("NUMERO DE PAGINAS: " + nPag);
             //PdfTextExtractor parser =new PdfTextExtractor(new PdfReader("C:/Text.pdf"));
@@ -160,12 +96,6 @@ public class HacerTest extends AppCompatActivity {
 
                 System.out.println("CONTENIDO PAGINA " + i + ": " + textFromPage);
             }
-            //textFromPage = PdfTextExtractor.getTextFromPage(reader, 1);
-            //textFromPage = textFromPage +"\n"+ PdfTextExtractor.getTextFromPage(reader, 2);
-            //System.out.println(reader.getFileLength());
-            //for(int i=0 ; i<reader.getFileLength(); i++) {
-            //   texto= texto+ PdfTextExtractor.getTextFromPage(reader, i);
-            //}
             reader.close();
         } catch (Exception e) {
             System.out.println("Excepcion cargando pdf" + e.getStackTrace());
@@ -179,32 +109,6 @@ public class HacerTest extends AppCompatActivity {
             System.out.println("Numero " + i + ": " + lista[i]);
         }
 
-        /*
-        int i = 0;
-        while (i < lista.length) {
-            Cuestion c = new Cuestion();
-            boolean fin = false;
-
-            while (!fin) {
-                if(i==0 && lista[i].charAt(0)!='-'){
-                    Toast.makeText(this, "Error de formato", Toast.LENGTH_SHORT).show();
-                }
-                if (lista[i].charAt(0) == '-') {
-                    c.setPregunta(lista[i]);
-                } else if (lista[i].charAt(0) == 'R') {
-                    String reducido = lista[i].substring(2);
-                    c.setCorrecta(reducido);
-                    fin = true;
-                } else {
-                    String reducido = lista[i].substring(2);
-                    c.getRespuestas().add(reducido);
-                }
-                i++;
-            }
-            c.setContestada(false);
-            test.add(c);
-        }
-        */
         if (comprobarFormato1(lista)) {
             pasarArrayVector(test);
         } else {
@@ -238,6 +142,9 @@ public class HacerTest extends AppCompatActivity {
 
 
     public void comenzarTest(View view) {
+
+        tiempoI = System.currentTimeMillis();
+
         ll1.setVisibility(View.VISIBLE);
         ll2.setVisibility(View.VISIBLE);
         btnComenzar.setVisibility(View.INVISIBLE);
@@ -391,13 +298,18 @@ public class HacerTest extends AppCompatActivity {
 
     public void terminarTest(View view) throws FileNotFoundException {
 
-        subirArchivo();
+        long tiempoF = System.currentTimeMillis();
+        double tiempo = (double) ((tiempoF-tiempoI)/1000);
+
+        datosArchivo();
 
         Intent intent = new Intent(this, Resultados.class);
         intent.putExtra("total", preguntas.length);
         intent.putExtra("correctas", bien);
         intent.putExtra("incorrectas", mal);
         intent.putExtra("noContestadas", nc);
+        intent.putExtra("tiempo", tiempo);
+        intent.putExtra("metodo", "local");
         startActivity(intent);
     }
 
@@ -598,31 +510,33 @@ public class HacerTest extends AppCompatActivity {
         return false;
     }
 
-    private void subirArchivo() throws FileNotFoundException {
+    private void datosArchivo() throws FileNotFoundException {
+
+        String[] splitTitulo = tituloGlobal.split("\\.");
+        String nombrePDF = splitTitulo[0];
 
         SharedPreferences myPreferences
                 = PreferenceManager.getDefaultSharedPreferences(HacerTest.this);
 
-        String email = myPreferences.getString("email", "pruebas");
+        SharedPreferences.Editor myEditor = myPreferences.edit();
+        myEditor.putString("rutaGlobal", rutaGlobal);
+        myEditor.putString("nombrePDF", nombrePDF);
+        myEditor.commit();
 
-//        String[] splitEmail = email.split("@");
-//        String finalEmail = splitEmail[0];
-        assert email != null;
-        if (!email.equals("empty")) {
-            File archivo = new File(rutaGlobal);
-            InputStream input = new FileInputStream(archivo);
-            StorageReference mStorage = FirebaseStorage.getInstance().getReference();
-            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
-            //DatabaseReference aux = FirebaseDatabase.getInstance().getReferenceFromUrl("https://testpro3-5d50d-default-rtdb.europe-west1.firebasedatabase.app");
-//        StorageReference pdfs = mStorage.child(email).child(tituloGlobal);
-//        pdfs.putStream(input);
-
-            //LO BUENO
-            String[] spliter = tituloGlobal.split("\\.");
-
-            StorageReference uri = mStorage.child(email).child(spliter[0]);
-            Uri filepath = Uri.fromFile(archivo);
-            uri.putFile(filepath);
-        }
+//        String email = myPreferences.getString("email", "pruebas");
+//
+//        if (email != null && !email.equals("empty")) {
+//            File archivo = new File(rutaGlobal);
+//            InputStream input = new FileInputStream(archivo);
+//            StorageReference mStorage = FirebaseStorage.getInstance().getReference();
+//            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+//
+//            //LO BUENO
+//            String[] spliter = tituloGlobal.split("\\.");
+//
+//            StorageReference uri = mStorage.child(email).child(spliter[0]);
+//            Uri filepath = Uri.fromFile(archivo);
+//            uri.putFile(filepath);
+//        }
     }
 }

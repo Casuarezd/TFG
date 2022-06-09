@@ -2,7 +2,6 @@ package com.example.tfg;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -18,31 +17,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tfg.model.Cuestion;
-import com.example.tfg.model.putPDF;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
-import com.itextpdf.io.util.FileUtil;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.parser.PdfTextExtractor;
-
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -71,7 +51,10 @@ public class HacerTestNube extends AppCompatActivity {
     Button btnSiguiente;
     Button btnVerificar;
 
+    String nombrePDF="";
+
     private FirebaseAuth mAuth;
+    private long tiempoI;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void onCreate(Bundle savedInstanceState) {
@@ -85,7 +68,7 @@ public class HacerTestNube extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         String ruta = extras.getString("ruta");
         String imagen = extras.getString("imagen");
-        String titulo = extras.getString("titulo");
+        nombrePDF = extras.getString("titulo");
 
         rgroup = (RadioGroup) findViewById(R.id.radioGrupo);
         ll1 = (LinearLayout) findViewById(R.id.linearLayout1);
@@ -99,23 +82,10 @@ public class HacerTestNube extends AppCompatActivity {
         ll1.setVisibility(View.INVISIBLE);
         ll2.setVisibility(View.INVISIBLE);
 
-        // tView.setText(titulo);
-        /*
-        try {
-           pruebas(ruta);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        tView.setText(lineas.toString());
-
-         */
-        String texto = "";
         String textFromPage = "";
         try {
             File archivo = new File(ruta);
             InputStream input = new FileInputStream(archivo);
-
-
             PdfReader reader = new PdfReader(input);
 
             int nPag = reader.getNumberOfPages();
@@ -143,12 +113,11 @@ public class HacerTestNube extends AppCompatActivity {
 
         if(comprobarFormato1(lista)){
             pasarArrayVector(test);
+            comenzarTest();
         }else{
             Toast.makeText(this, "Error de formato en linea "+ lineafallo, Toast.LENGTH_SHORT).show();
             finish();
         }
-
-
     }
 
     public void pasarArrayVector(ArrayList<Cuestion> array) {
@@ -168,16 +137,15 @@ public class HacerTestNube extends AppCompatActivity {
     }
 
 
-    public void comenzarTest(View view) {
+    public void comenzarTest() {
+
+        tiempoI = System.currentTimeMillis();
+
         ll1.setVisibility(View.VISIBLE);
         ll2.setVisibility(View.VISIBLE);
-        btnComenzar.setVisibility(View.INVISIBLE);
-        btnComenzar.setEnabled(false);
-
         bien=0;
         mal=0;
         nc=preguntas.length;
-
         cambiarPregunta();
     }
 
@@ -311,11 +279,21 @@ public class HacerTestNube extends AppCompatActivity {
     }
 
     public void terminarTest(View view) {
+
+        long tiempoF = System.currentTimeMillis();
+        double tiempo = (double) ((tiempoF-tiempoI)/1000);
+
+        Bundle extras = getIntent().getExtras();
+        String metodo = extras.getString("metodo");
+
         Intent intent = new Intent(this, Resultados.class);
         intent.putExtra("total", preguntas.length);
         intent.putExtra("correctas", bien);
         intent.putExtra("incorrectas", mal);
         intent.putExtra("noContestadas", nc);
+        intent.putExtra("tiempo", tiempo);
+        intent.putExtra("nombrePDF", nombrePDF);
+        intent.putExtra("metodo", metodo);
         startActivity(intent);
     }
 

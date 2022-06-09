@@ -1,9 +1,9 @@
 package com.example.tfg.ui.miNube
 
 import android.app.AlertDialog
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,16 +19,10 @@ import com.google.firebase.storage.ktx.component2
 import com.google.firebase.storage.ktx.storage
 import android.net.Uri
 import android.preference.PreferenceManager
-import android.util.Log
-import com.example.tfg.HacerTest
-import com.example.tfg.HacerTestNube
-import com.example.tfg.R
+import com.example.tfg.Estadisticas
 import com.example.tfg.adapter.CustomAdapterNube
 import com.example.tfg.databinding.FragmentNubeBinding
 import com.example.tfg.model.ModeloListarArchivos
-import com.example.tfg.model.putPDF
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
 import java.io.*
 
 
@@ -72,7 +66,7 @@ class MiNubeFragment : Fragment() {
     private fun listarDocumentos() {
         val myPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
-        val email: String = myPreferences.getString("email", "pruebas")
+        val email: String = myPreferences.getString("email", "empty")
 
 //        val splitEmail = email.split("@").toTypedArray()
 //        val finalEmail = splitEmail[0]
@@ -90,20 +84,9 @@ class MiNubeFragment : Fragment() {
 
                         var ruta = item.toString().split("/")
                         var name = ruta[ruta.size - 1]
-                        var uriItem = item.downloadUrl
-                        println("URI Item")
-                        println(uriItem.toString())
 
-//                    var directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-//                    var file = File.createTempFile(name[0], "pdf", directory)
-//                    var file = File(name[0])
                         var file = File.createTempFile(name, "pdf")
                         item.getFile(file)
-
-//                    println("Name")
-//                    println(name[0]);
-//                    println("Path")
-//                    println(file.absolutePath);
 
                         var uri = Uri.fromFile(file);
                         println("URI FILE")
@@ -133,10 +116,17 @@ class MiNubeFragment : Fragment() {
         //Controlar la pulsación
         adapter.setOnItemClickListener(object : CustomAdapterNube.onItemClickListener {
             override fun onItemClick(position: Int) {
-                val intent = Intent(binding.recyclerView.context, HacerTestNube::class.java)
+
+                var myPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+                val myEditor = myPreferences.edit()
+                myEditor.putString("nombrePDF", archivos[position].titulo);
+                myEditor.commit();
+
+                val intent = Intent(binding.recyclerView.context, Estadisticas::class.java)
                 intent.putExtra("ruta", archivos[position].ruta)
                 intent.putExtra("imagen", archivos[position].imagen)
                 intent.putExtra("titulo", archivos[position].titulo)
+                intent.putExtra("metodo", "nube")
                 startActivity(intent)
             }
         })
@@ -163,13 +153,10 @@ class MiNubeFragment : Fragment() {
                             val myPreferences =
                                 PreferenceManager.getDefaultSharedPreferences(context)
                             val email: String = myPreferences.getString("email", "pruebas")
-                            val splitEmail = email.split("@").toTypedArray()
-                            val finalEmail = splitEmail[0]
 
                             val mStorage = Firebase.storage
-                            val elemento =
-                                mStorage.reference.child(finalEmail).child(oneArchive.titulo)
-                            elemento.delete()
+                            mStorage.reference.child(email).child(oneArchive.titulo).delete()
+
 
                             archivos.removeAt(viewHolder.adapterPosition);
                             adapter.notifyItemRemoved(viewHolder.adapterPosition)
