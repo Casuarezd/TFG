@@ -80,16 +80,35 @@ class HomeFragment : Fragment() {
         this.disposable?.dispose()
     }
 
+//    fun initRecyclerView() {
+//        binding.recyclerView.layoutManager = LinearLayoutManager(context)
+//        val adapter = CustomAdapter(archivos)
+//        binding.recyclerView.adapter = adapter
+//        adapter.setOnItemClickListener(object : CustomAdapter.onItemClickListener {
+//            override fun onItemClick(position: Int) {
+//                val aux = File(archivos[position].ruta)
+//                if(aux.isDirectory){
+//
+//                }else if(aux.extension=="pdf"){
+//                    val intent = Intent(binding.recyclerView.context, HacerTest::class.java)
+//                    intent.putExtra("ruta", archivos[position].ruta)
+//                    intent.putExtra("imagen", archivos[position].imagen)
+//                    intent.putExtra("titulo", archivos[position].titulo)
+//                    startActivity(intent)
+//                }
+//
+//            }
+//        })
+//    }
+
     fun initRecyclerView() {
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
-        var adapter = CustomAdapter(archivos)
+        val adapter = CustomAdapter(archivos)
         binding.recyclerView.adapter = adapter
         adapter.setOnItemClickListener(object : CustomAdapter.onItemClickListener {
             override fun onItemClick(position: Int) {
                 val aux = File(archivos[position].ruta)
-                if(aux.isDirectory){
-
-                }else if(aux.extension=="pdf"){
+                if(aux.extension=="pdf"){
                     val intent = Intent(binding.recyclerView.context, HacerTest::class.java)
                     intent.putExtra("ruta", archivos[position].ruta)
                     intent.putExtra("imagen", archivos[position].imagen)

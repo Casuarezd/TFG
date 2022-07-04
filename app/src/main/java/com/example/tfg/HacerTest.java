@@ -84,17 +84,13 @@ public class HacerTest extends AppCompatActivity {
         try {
             PdfReader reader = new PdfReader(ruta);
             int nPag = reader.getNumberOfPages();
-            System.out.println("NUMERO DE PAGINAS: " + nPag);
-            //PdfTextExtractor parser =new PdfTextExtractor(new PdfReader("C:/Text.pdf"));
-            //System.out.println(reader.getPageContent(1));
+
             for (int i = 1; i <= nPag; i++) {
                 if (i != 1) {
                     textFromPage = textFromPage + "\n" + PdfTextExtractor.getTextFromPage(reader, i);
                 } else {
                     textFromPage = textFromPage + PdfTextExtractor.getTextFromPage(reader, i);
                 }
-
-                System.out.println("CONTENIDO PAGINA " + i + ": " + textFromPage);
             }
             reader.close();
         } catch (Exception e) {
@@ -254,7 +250,9 @@ public class HacerTest extends AppCompatActivity {
                 mal++;
                 nc--;
             }
-        } else {
+        }
+
+        else {
             /*
             AlertDialog.Builder builder = new AlertDialog.Builder(HacerTest.this);
             builder.setTitle("NO CONSTESTADA");
@@ -383,21 +381,15 @@ public class HacerTest extends AppCompatActivity {
         while (i < list.length) {
             Cuestion c = new Cuestion();
             boolean fin = false;
-
             while (!fin) {
-
                 if (list[i] == null || list[i] == "" || list[i].length() < 3) {
                     lineafallo = i + 1;
                     return false;
                 }
-                //Compruebo si el primer caracter es un guion
-                //Compruebo si las respuestas empiezan por una letra valida
-                //Compruebo si la respueta empieza por R y es valida
                 if (i == 0 && list[i].charAt(0) != '-') {
                     lineafallo = i + 1;
                     return false;
                 }
-
                 if (list[i].charAt(0) == '-') {
                     c.setPregunta(list[i]);
                 } else if (list[i].charAt(0) == 'R') {
@@ -419,7 +411,6 @@ public class HacerTest extends AppCompatActivity {
                         lineafallo = i + 1;
                         return false;
                     }
-
                 }
                 i++;
             }

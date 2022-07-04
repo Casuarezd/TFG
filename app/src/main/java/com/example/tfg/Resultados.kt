@@ -63,8 +63,8 @@ class Resultados : AppCompatActivity() {
         val email = myPreferences.getString("email", "empty")
         val nombrePDF= myPreferences.getString("nombrePDF", "empty")
 
-        var splitEmail = email.split("@")
-        var finalEmail = splitEmail[0]
+        val splitEmail = email.split("@")
+        val finalEmail = splitEmail[0]
 
         database = Firebase.database.reference
         if (nombrePDF != "empty" && email != "empty") {
@@ -159,8 +159,7 @@ class Resultados : AppCompatActivity() {
 
             val archivo = File(rutaGlobal)
             val mStorage = FirebaseStorage.getInstance().reference
-            //val databaseReference = FirebaseDatabase.getInstance().reference
-            //LO BUENO
+
             val uri = mStorage.child(email).child(nombrePDF)
             val filepath = Uri.fromFile(archivo)
             uri.putFile(filepath)

@@ -42,8 +42,8 @@ class SearchFragment : Fragment(){
         _binding = FragmentSearchBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        var editText = binding.textEmail
-        var button = binding.searchButton
+        val editText = binding.textEmail
+        val button = binding.searchButton
         button.setOnClickListener {
             if(editText.text.isNotEmpty()){
                 listarDocumentos(editText.text.toString())

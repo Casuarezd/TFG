@@ -63,51 +63,48 @@ class MiNubeFragment : Fragment() {
 //        println(archivos)
 //    }
 
-    private fun listarDocumentos() {
-        val myPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-
-        val email: String = myPreferences.getString("email", "empty")
-
-//        val splitEmail = email.split("@").toTypedArray()
-//        val finalEmail = splitEmail[0]
-        if (email != "empty") {
-            val mStorage = Firebase.storage
-            val lista = mStorage.reference.child(email)
-
-            lista.listAll()
-                .addOnSuccessListener { (items, prefixes) ->
-                    prefixes.forEach { prefix ->
-                        //println(prefix)
-                    }
-
-                    items.forEach { item ->
-
-                        var ruta = item.toString().split("/")
-                        var name = ruta[ruta.size - 1]
-
-                        var file = File.createTempFile(name, "pdf")
-                        item.getFile(file)
-
-                        var uri = Uri.fromFile(file);
-                        println("URI FILE")
-                        println(uri.path.toString())
-
-
-                        val aux = ModeloListarArchivos(
-                            name,
-                            "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/1200px-PDF_file_icon.svg.png",
-                            uri.path.toString()
-                        )
-                        archivos.add(aux)
-                    }
-                    initRecyclerView()
-                    println("SIZE " + archivos.size)
-                }
-                .addOnFailureListener {
-                    // Uh-oh, an error occurred!
-                }
-        }
-    }
+//    private fun listarDocumentos() {
+//        val myPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+//        val email: String = myPreferences.getString("email", "empty")
+//
+//        if (email != "empty") {
+//            val mStorage = Firebase.storage
+//            val lista = mStorage.reference.child(email)
+//
+//            lista.listAll()
+//                .addOnSuccessListener { (items, prefixes) ->
+//                    prefixes.forEach { prefix ->
+//                        //println(prefix)
+//                    }
+//
+//                    items.forEach { item ->
+//
+//                        var ruta = item.toString().split("/")
+//                        var name = ruta[ruta.size - 1]
+//
+//                        var file = File.createTempFile(name, "pdf")
+//                        item.getFile(file)
+//
+//                        var uri = Uri.fromFile(file);
+//                        println("URI FILE")
+//                        println(uri.path.toString())
+//
+//
+//                        val aux = ModeloListarArchivos(
+//                            name,
+//                            "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/1200px-PDF_file_icon.svg.png",
+//                            uri.path.toString()
+//                        )
+//                        archivos.add(aux)
+//                    }
+//                    initRecyclerView()
+//                    println("SIZE " + archivos.size)
+//                }
+//                .addOnFailureListener {
+//                    // Uh-oh, an error occurred!
+//                }
+//        }
+//    }
 
     fun initRecyclerView() {
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
@@ -148,7 +145,7 @@ class MiNubeFragment : Fragment() {
                     builder.setMessage("Si acepta eliminara el test de forma permanente y no podrá recuperarlo")
                     builder.setPositiveButton("Eliminar",
                         DialogInterface.OnClickListener { dialog, id ->
-                            var oneArchive = archivos[viewHolder.adapterPosition]
+                            val oneArchive = archivos[viewHolder.adapterPosition]
 
                             val myPreferences =
                                 PreferenceManager.getDefaultSharedPreferences(context)
@@ -163,8 +160,8 @@ class MiNubeFragment : Fragment() {
                         })
                     builder.setNegativeButton("Cancelar",
                         DialogInterface.OnClickListener { dialog, id ->
-                            var oneArchive = archivos[viewHolder.adapterPosition]
-                            var pos = viewHolder.adapterPosition
+                            val oneArchive = archivos[viewHolder.adapterPosition]
+                            val pos = viewHolder.adapterPosition
                             archivos.removeAt(pos);
                             adapter.notifyItemRemoved(pos)
 
@@ -177,5 +174,35 @@ class MiNubeFragment : Fragment() {
             }
         val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
         itemTouchHelper.attachToRecyclerView(binding.recyclerView)
+    }
+
+
+    private fun listarDocumentos() {
+        val myPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        val email: String = myPreferences.getString("email", "empty")
+
+        if (email != "empty") {
+            val mStorage = Firebase.storage
+            val lista = mStorage.reference.child(email)
+
+            lista.listAll()
+                .addOnSuccessListener { (items) ->
+                    items.forEach { item ->
+                        val ruta = item.toString().split("/")
+                        val name = ruta[ruta.size - 1]
+                        val file = File.createTempFile(name, "pdf")
+                        item.getFile(file)
+                        val uri = Uri.fromFile(file);
+
+                        val aux = ModeloListarArchivos(
+                            name,
+                            "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/1200px-PDF_file_icon.svg.png",
+                            uri.path.toString()
+                        )
+                        archivos.add(aux)
+                    }
+                    initRecyclerView()
+                }
+        }
     }
 }

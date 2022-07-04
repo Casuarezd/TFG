@@ -71,100 +71,97 @@ class Estadisticas : AppCompatActivity() {
         val email: String = myPreferences.getString("email", "pruebas")
         val nombrePDF : String = myPreferences.getString("nombrePDF", "empty")
 
-        var splitEmail = email.split("@")
-        var finalEmail = splitEmail[0]
-
+        val splitEmail = email.split("@")
+        val finalEmail = splitEmail[0]
 
         database = Firebase.database.reference
-        if (nombrePDF != null) {
 
-            database.child(finalEmail).child(nombrePDF).child("vecesHecho").get().addOnSuccessListener {
-                if(it.value == null){
-                    tVveces.append("0")
+        database.child(finalEmail).child(nombrePDF).child("vecesHecho").get().addOnSuccessListener {
+            if(it.value == null){
+                tVveces.append("0")
+            }else{
+                tVveces.append(it.value.toString())
+            }
+        }
+
+        database.child(finalEmail).child(nombrePDF).child("aciertosPorcentaje").get().addOnSuccessListener{
+            if(it.value == null){
+                tVaciertos.append("0%")
+            }else{
+                tVaciertos.append(it.value.toString() + "%")
+            }
+        }
+
+        database.child(finalEmail).child(nombrePDF).child("fallosPorcentaje").get().addOnSuccessListener{
+            if(it.value == null){
+                tVfallos.append("0%")
+            }else{
+                tVfallos.append(it.value.toString() + "%")
+            }
+        }
+
+        database.child(finalEmail).child(nombrePDF).child("tiempoMedia").get().addOnSuccessListener{
+            if(it.value == null){
+                tVtiempo.append("0")
+            }else{
+                val time = it.value.toString().toDouble()
+                if(time>=60){
+                    val min = (time/60).toInt()
+                    val seg = (time%60).toInt()
+                    tVtiempo.append("$min min $seg seg")
                 }else{
-                    tVveces.append(it.value.toString())
+                    val seg = time.toInt()
+                    tVtiempo.append("$seg seg")
                 }
             }
+        }
 
-            database.child(finalEmail).child(nombrePDF).child("aciertosPorcentaje").get().addOnSuccessListener{
-                if(it.value == null){
-                    tVaciertos.append("0%")
-                }else{
-                    tVaciertos.append(it.value.toString() + "%")
-                }
+        database.child(finalEmail).child(nombrePDF).child("preguntas").get().addOnSuccessListener{
+            if(it.value == null){
+                tVpreguntas.append("0")
+                tVpreguntasUltimo.append("0")
+            }else{
+                tVpreguntas.append(it.value.toString())
+                tVpreguntasUltimo.append(it.value.toString())
             }
+        }
 
-            database.child(finalEmail).child(nombrePDF).child("fallosPorcentaje").get().addOnSuccessListener{
-                if(it.value == null){
-                    tVfallos.append("0%")
-                }else{
-                    tVfallos.append(it.value.toString() + "%")
-                }
+        database.child(finalEmail).child(nombrePDF).child("correctas").get().addOnSuccessListener{
+            if(it.value == null){
+                tVaciertosUltimo.append("0")
+            }else{
+                tVaciertosUltimo.append(it.value.toString())
             }
+        }
 
-            database.child(finalEmail).child(nombrePDF).child("tiempoMedia").get().addOnSuccessListener{
-                if(it.value == null){
-                    tVtiempo.append("0")
-                }else{
-                    val time = it.value.toString().toDouble()
-                    if(time>=60){
-                        val min = (time/60).toInt()
-                        val seg = (time%60).toInt()
-                        tVtiempo.append("$min min $seg seg")
-                    }else{
-                        val seg = time.toInt()
-                        tVtiempo.append("$seg seg")
-                    }
-                }
+        database.child(finalEmail).child(nombrePDF).child("incorrectas").get().addOnSuccessListener{
+            if(it.value == null){
+                tVfallosUltimo.append("0")
+            }else{
+                tVfallosUltimo.append(it.value.toString())
             }
+        }
 
-            database.child(finalEmail).child(nombrePDF).child("preguntas").get().addOnSuccessListener{
-                if(it.value == null){
-                    tVpreguntas.append("0")
-                    tVpreguntasUltimo.append("0")
-                }else{
-                    tVpreguntas.append(it.value.toString())
-                    tVpreguntasUltimo.append(it.value.toString())
-                }
+        database.child(finalEmail).child(nombrePDF).child("noContestadas").get().addOnSuccessListener{
+            if(it.value == null){
+                tVnoContestadas.append("0")
+            }else{
+                tVnoContestadas.append(it.value.toString())
             }
+        }
 
-            database.child(finalEmail).child(nombrePDF).child("correctas").get().addOnSuccessListener{
-                if(it.value == null){
-                    tVaciertosUltimo.append("0")
+        database.child(finalEmail).child(nombrePDF).child("tiempo").get().addOnSuccessListener{
+            if(it.value == null){
+                tVtiempoUltimo.append("0")
+            }else{
+                val time = it.value.toString().toDouble()
+                if(time>=60){
+                    val min = (time/60).toInt()
+                    val seg = (time%60).toInt()
+                    tVtiempoUltimo.append("$min min $seg seg")
                 }else{
-                    tVaciertosUltimo.append(it.value.toString())
-                }
-            }
-
-            database.child(finalEmail).child(nombrePDF).child("incorrectas").get().addOnSuccessListener{
-                if(it.value == null){
-                    tVfallosUltimo.append("0")
-                }else{
-                    tVfallosUltimo.append(it.value.toString())
-                }
-            }
-
-            database.child(finalEmail).child(nombrePDF).child("noContestadas").get().addOnSuccessListener{
-                if(it.value == null){
-                    tVnoContestadas.append("0")
-                }else{
-                    tVnoContestadas.append(it.value.toString())
-                }
-            }
-
-            database.child(finalEmail).child(nombrePDF).child("tiempo").get().addOnSuccessListener{
-                if(it.value == null){
-                    tVtiempoUltimo.append("0")
-                }else{
-                    val time = it.value.toString().toDouble()
-                    if(time>=60){
-                        val min = (time/60).toInt()
-                        val seg = (time%60).toInt()
-                        tVtiempoUltimo.append("$min min $seg seg")
-                    }else{
-                        val seg = time.toInt()
-                        tVtiempoUltimo.append("$seg seg")
-                    }
+                    val seg = time.toInt()
+                    tVtiempoUltimo.append("$seg seg")
                 }
             }
         }
